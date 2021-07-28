@@ -1,0 +1,10 @@
+---
+- name: Debian | Install prerequisite packages
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: true
+    allow_unauthenticated: false
+  loop: "{{ prereq_pkgs }}"
+  become: true
+...
