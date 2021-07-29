@@ -2,6 +2,20 @@
 prereq_pkgs:
   - apt-transport-https
   - ca-certificates
+
+# osbpo apt repo keyring
+osbpo_keyring:
+  url: "http://osbpo.debian.net/osbpo/dists/pubkey.gpg"
+  file: "/usr/share/keyrings/osbpo-keyring.gpg"
+
+# osbpo apt repo
+osbpo_repos:
+  - repo: "deb [signed-by=/usr/share/keyrings/osbpo-keyring.gpg] http://osbpo.debian.net/osbpo bullseye-{{ openstack_release }}-backports main"
+    filename: "openstack"
+  - repo: "deb [signed-by=/usr/share/keyrings/osbpo-keyring.gpg] http://osbpo.debian.net/osbpo bullseye-{{ openstack_release }}-backports-nochange main"
+    filename: "openstack"
+
+packages:
   - curl
   - gnupg
 ...
