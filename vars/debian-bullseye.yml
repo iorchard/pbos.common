@@ -3,6 +3,8 @@ apt_state: "latest"
 prereq_pkgs:
   - apt-transport-https
   - ca-certificates
+  - gnupg
+  - curl
 
 # osbpo apt repo keyring
 osbpo_keyring:
@@ -16,7 +18,5 @@ osbpo_repos:
   - repo: "deb [signed-by=/usr/share/keyrings/osbpo-keyring.gpg] http://osbpo.debian.net/osbpo bullseye-{{ openstack_release }}-backports-nochange main"
     filename: "openstack"
 
-packages:
-  - curl
-  - gnupg
+packages: []
 ...
