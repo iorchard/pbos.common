@@ -29,4 +29,15 @@
   delay: 3
   become: true
   loop: "{{ packages }}"
+
+- name: Ubuntu | disable apt auto upgrade
+  ansible.builtin.copy:
+    src: "{{ ansible_distribution | lower }}{{ item }}"
+    dest: "{{ item }}"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  become: true
+  loop:
+    - "/etc/apt/apt.conf.d/20auto-upgrades"
 ...
