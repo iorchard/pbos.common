@@ -1,5 +1,5 @@
 ---
-apt_state: "latest"
+pkg_state: "latest"
 prereq_pkgs:
   - apt-transport-https
   - ca-certificates

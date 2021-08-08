@@ -2,8 +2,8 @@
 pkg_state: "latest"
 prereq_pkgs:
   - ca-certificates
-
-packages:
+  - gnupg2
   - curl
-  - gnupg
+
+packages: []
 ...

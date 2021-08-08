@@ -1,12 +1,10 @@
 ---
 - name: Ubuntu | install prerequisite packages
-  ansible.builtin.apt:
+  ansible.builtin.package:
     name: "{{ item }}"
-    state: "{{ apt_state }}"
-    update_cache: true
-    allow_unauthenticated: false
-  register: _apt
-  until: not _apt.failed
+    state: "{{ pkg_state }}"
+  register: _pkg
+  until: not _pkg.failed
   retries: 3
   delay: 3
   loop: "{{ prereq_pkgs }}"
@@ -18,13 +16,11 @@
   become: true
   
 - name: Ubuntu | install packages
-  ansible.builtin.apt:
+  ansible.builtin.package:
     name: "{{ item }}"
-    state: "{{ apt_state }}"
-    update_cache: true
-    allow_unauthenticated: false
-  register: _apt
-  until: not _apt.failed
+    state: "{{ pkg_state }}"
+  register: _pkg
+  until: not _pkg.failed
   retries: 3
   delay: 3
   become: true
