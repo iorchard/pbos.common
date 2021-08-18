@@ -1,5 +1,5 @@
 ---
-- name: CentOS | Install prerequisite packages
+- name: Rocky Linux | Install prerequisite packages
   ansible.builtin.package:
     name: "{{ item }}"
     state: "{{ pkg_state }}"
@@ -10,7 +10,7 @@
   loop: "{{ prereq_pkgs }}"
   become: true
 
-- name: CentOS | Install packages
+- name: Rocky Linux | Install packages
   ansible.builtin.package:
     name: "{{ item }}"
     state: "{{ pkg_state }}"
