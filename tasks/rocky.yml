@@ -10,6 +10,11 @@
   loop: "{{ prereq_pkgs }}"
   become: true
 
+- name: Rocky Linux | add openstack repository
+  ansible.builtin.command: >-
+    dnf -y install {{ openstack_repo_rpm }}
+  become: true
+
 - name: Rocky Linux | Install packages
   ansible.builtin.package:
     name: "{{ item }}"

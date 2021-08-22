@@ -5,5 +5,7 @@ prereq_pkgs:
   - gnupg2
   - curl
 
+openstack_repo_rpm: "https://www.rdoproject.org/repos/rdo-release.el8.rpm"
+
 packages: []
 ...
