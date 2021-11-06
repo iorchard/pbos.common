@@ -5,7 +5,8 @@ prereq_pkgs:
   - gnupg2
   - curl
 
-openstack_repo_rpm: "https://www.rdoproject.org/repos/rdo-release.el8.rpm"
+#openstack_repo_rpm: "https://www.rdoproject.org/repos/rdo-release.el8.rpm"
+openstack_repo_rpm: "https://repos.fedorapeople.org/repos/openstack/openstack-{{ openstack_release }}/rdo-release-{{ openstack_release }}-1.el8.noarch.rpm"
 
 packages: []
 ...
