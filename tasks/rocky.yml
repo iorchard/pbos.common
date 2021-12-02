@@ -10,19 +10,14 @@
   loop: "{{ prereq_pkgs }}"
   become: true
 
-- name: Rocky Linux | enable powertools repo
-  ansible.builtin.command: >-
-    dnf config-manager --set-enabled powertools
-  become: true
-
-- name: Rocky Linux | clean all dnf caches
-  ansible.builtin.command: >-
-    dnf clean all
-  become: true
-
 - name: Rocky Linux | add openstack repository
   ansible.builtin.command: >-
     dnf -y install {{ openstack_repo_rpm }}
+  become: true
+
+- name: Rocky Linux | enable powertools repo
+  ansible.builtin.command: >-
+    dnf config-manager --set-enabled powertools
   become: true
 
 - name: Rocky Linux | Install packages
