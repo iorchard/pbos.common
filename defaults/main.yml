@@ -1,6 +1,7 @@
 ---
 openstack_release: "wallaby"
 # TLS
+ca_passphrase: ~
 tls_tmp_dir: "/tmp/tls"
 tls_subj: {
   country_name: "KR",
@@ -16,4 +17,5 @@ tls_tmp_ca: {
 }
 tls_cert_dir: "/etc/pki/pbos"
 tls_ca_cert: "{{ tls_cert_dir }}/ca-cert.pem"
+tls_ca_key: "{{ tls_cert_dir }}/ca-key.pem"
 ...

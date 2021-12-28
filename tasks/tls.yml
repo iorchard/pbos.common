@@ -65,4 +65,13 @@
     group: "root"
     mode: "0644"
   become: true
+
+- name: TLS | copy ca private key file to all nodes
+  ansible.builtin.copy:
+    dest: "{{ tls_ca_key }}"
+    src: "{{ tls_tmp_ca.key }}"
+    owner: "root"
+    group: "root"
+    mode: "0640"
+  become: true
 ...
