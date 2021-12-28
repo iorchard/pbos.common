@@ -1,3 +1,19 @@
 ---
 openstack_release: "wallaby"
+# TLS
+tls_tmp_dir: "/tmp/tls"
+tls_subj: {
+  country_name: "KR",
+  state_or_province_name: "Gangwon-Do",
+  locality_name: "Wonju-Si",
+  organization_name: "iOrchard",
+  common_name: "PBOS",
+  email_address: "support@iorchard.co.kr"
+}
+tls_tmp_ca: {
+  key: "{{ tls_tmp_dir }}/ca-key.pem",
+  crt: "{{ tls_tmp_dir }}/ca-cert.pem"
+}
+tls_cert_dir: "/etc/pki/pbos"
+tls_ca_cert: "{{ tls_cert_dir }}/ca-cert.pem"
 ...

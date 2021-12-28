@@ -1,0 +1,68 @@
+---
+- name: TLS | create temporary certificate directory
+  ansible.builtin.file:
+    path: "{{ tls_tmp_dir }}"
+    state: directory
+    mode: "0700"
+  delegate_to: "{{ groups['controller'][0] }}"
+  run_once: true
+
+- name: TLS | create certificate directory
+  ansible.builtin.file:
+    path: "{{ tls_cert_dir }}"
+    state: directory
+    mode: "0755"
+  become: true
+
+- name: TLS | create CA private key with passphrase
+  community.crypto.openssl_privatekey:
+    path: "{{ tls_tmp_ca.key }}"
+    passphrase: "{{ ca_passphrase }}"
+    select_crypto_backend: cryptography
+    type: RSA
+    size: 4096
+    cipher: auto
+  delegate_to: "{{ groups['controller'][0] }}"
+  run_once: true
+
+- name: TLS | create CSR for CA certificate
+  community.crypto.openssl_csr_pipe:
+    privatekey_path: "{{ tls_tmp_ca.key }}"
+    privatekey_passphrase: "{{ ca_passphrase }}"
+    country_name: "{{ tls_subj.country_name }}"
+    state_or_province_name: "{{ tls_subj.state_or_province_name }}"
+    organization_name: "{{ tls_subj.organization_name }}"
+    common_name: "{{ tls_subj.common_name }}"
+    email_address: "{{ tls_subj.email_address }}"
+    use_common_name_for_san: false
+    basic_constraints:
+      - 'CA:TRUE'
+    basic_constraints_critical: true
+    key_usage:
+      - keyCertSign
+    key_usage_critical: true
+  register: ca_csr
+  delegate_to: "{{ groups['controller'][0] }}"
+  run_once: true
+
+- name: TLS | create CA certificate
+  community.crypto.x509_certificate:
+    path: "{{ tls_tmp_ca.crt }}"
+    csr_content: "{{ ca_csr.csr }}"
+    ownca_not_after: "+36500d"
+    ownca_not_before: "+0s"
+    privatekey_path: "{{ tls_tmp_ca.key }}"
+    privatekey_passphrase: "{{ ca_passphrase }}"
+    provider: selfsigned
+  delegate_to: "{{ groups['controller'][0] }}"
+  run_once: true
+
+- name: TLS | copy ca certificate file to all nodes
+  ansible.builtin.copy:
+    dest: "{{ tls_ca_cert }}"
+    src: "{{ tls_tmp_ca.crt }}"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  become: true
+...
