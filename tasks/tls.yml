@@ -57,21 +57,15 @@
   delegate_to: "{{ groups['controller'][0] }}"
   run_once: true
 
-- name: TLS | copy ca certificate file to all nodes
+- name: TLS | copy ca certificate and key to all nodes
   ansible.builtin.copy:
-    dest: "{{ tls_ca_cert }}"
-    src: "{{ tls_tmp_ca.crt }}"
+    dest: "{{ item.dest }}"
+    src: "{{ item.src }}"
     owner: "root"
     group: "root"
-    mode: "0644"
+    mode: "{{ item.mode }}"
   become: true
-
-- name: TLS | copy ca private key file to all nodes
-  ansible.builtin.copy:
-    dest: "{{ tls_ca_key }}"
-    src: "{{ tls_tmp_ca.key }}"
-    owner: "root"
-    group: "root"
-    mode: "0640"
-  become: true
+  loop:
+    - {src: "{{ tls_tmp_ca.crt }}", dest: "{{ tls_ca_cert }}", mode: "0644"}
+    - {src: "{{ tls_tmp_ca.key }}", dest: "{{ tls_ca_key }}", mode: "0600"}
 ...
