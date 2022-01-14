@@ -6,6 +6,7 @@
     mode: "0700"
   delegate_to: "{{ groups['controller'][0] }}"
   run_once: true
+  when: not skip_ca_cert_creation_tasks
 
 - name: TLS | create certificate directory
   ansible.builtin.file:
@@ -24,6 +25,7 @@
     cipher: auto
   delegate_to: "{{ groups['controller'][0] }}"
   run_once: true
+  when: not skip_ca_cert_creation_tasks
 
 - name: TLS | create CSR for CA certificate
   community.crypto.openssl_csr_pipe:
@@ -44,6 +46,7 @@
   register: ca_csr
   delegate_to: "{{ groups['controller'][0] }}"
   run_once: true
+  when: not skip_ca_cert_creation_tasks
 
 - name: TLS | create CA certificate
   community.crypto.x509_certificate:
@@ -56,6 +59,7 @@
     provider: selfsigned
   delegate_to: "{{ groups['controller'][0] }}"
   run_once: true
+  when: not skip_ca_cert_creation_tasks
 
 - name: TLS | copy ca certificate and key to all nodes
   ansible.builtin.copy:

@@ -1,6 +1,10 @@
 ---
 openstack_release: "wallaby"
 # TLS
+# Set this to true to use the existing CA key and certificate
+# Override tls_tmp_ca to the existing CA key and cert directory in global vars
+skip_ca_cert_creation_tasks: false
+# CA cert variables
 ca_passphrase: ~
 tls_tmp_dir: "/tmp/tls"
 tls_subj: {
