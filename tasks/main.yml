@@ -16,6 +16,12 @@
       paths:
         - "."
 
+- name: Main | check if ca certificate exists
+  ansible.builtin.stat:
+    path: "{{ tls_ca_cert }}"
+  register: ca_cert_file
+
 - name: Main | import tls tasks
   ansible.builtin.import_tasks: "tls.yml"
+  when: not ca_cert_file.stat.exists
 ...
