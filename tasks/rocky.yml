@@ -24,8 +24,6 @@
   ansible.builtin.package:
     name: "{{ item }}"
     state: "{{ pkg_state }}"
-    update_cache: true
-    allow_unauthenticated: false
   register: _pkg
   until: not _pkg.failed
   retries: 3
