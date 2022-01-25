@@ -32,4 +32,6 @@
   delay: 3
   become: true
   loop: "{{ packages }}"
+  notify:
+    - systemctl restart service
 ...
