@@ -14,7 +14,8 @@
   ansible.builtin.command: >-
     add-apt-repository -y cloud-archive:{{ openstack_release }}
   become: true
-  
+  changed_when: false
+
 - name: Ubuntu | install packages
   ansible.builtin.package:
     name: "{{ item }}"

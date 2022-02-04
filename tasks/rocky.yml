@@ -1,5 +1,52 @@
 ---
-- name: Rocky Linux | Install prerequisite packages
+- name: Rocky Linux | check if yum repo directory exists
+  ansible.builtin.stat:
+    path: "/etc/yum.repos.d"
+  register: check_yum_repo
+
+- name: Rocky Linux | back up yum repo directory if offline
+  ansible.builtin.copy:
+    src: "/etc/yum.repos.d"
+    dest: "/etc/yum.repos.d.{{ ansible_date_time.iso8601 }}"
+    remote_src: true
+    mode: "0755"
+  become: true
+  when:
+    - offline
+    - check_yum_repo.stat.exists
+
+- name: Rocky Linux | remove yum repo directory
+  ansible.builtin.file:
+    path: "/etc/yum.repos.d"
+    state: absent
+  become: true
+  when:
+    - offline
+    - check_yum_repo.stat.exists
+
+- name: Rocky Linux | create yum repo directory
+  ansible.builtin.file:
+    path: "/etc/yum.repos.d"
+    state: directory
+    mode: "0755"
+  become: true
+  when:
+    - offline
+    - check_yum_repo.stat.exists
+
+- name: Rocky Linux | configure yum repo
+  ansible.builtin.template:
+    dest: "{{ item.dest }}"
+    src: "{{ ansible_os_family | lower }}{{ item.dest + '.j2' }}"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  loop:
+    - {dest: "/etc/yum.repos.d/pbos.repo"}
+  become: true
+  when: offline
+
+- name: Rocky Linux | install prerequisite packages
   ansible.builtin.package:
     name: "{{ item }}"
     state: "{{ pkg_state }}"
@@ -14,11 +61,13 @@
   ansible.builtin.command: >-
     dnf -y install {{ openstack_repo_rpm }}
   become: true
+  when: not offline
 
 - name: Rocky Linux | enable powertools repo
   ansible.builtin.command: >-
     dnf config-manager --set-enabled powertools
   become: true
+  when: not offline
 
 - name: Rocky Linux | Install packages
   ansible.builtin.package:
