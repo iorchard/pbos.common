@@ -57,6 +57,19 @@
   loop: "{{ prereq_pkgs }}"
   become: true
 
+- name: Rocky Linux | set stream variable for CentOS 8-stream Cloud SIG repo
+  ansible.builtin.copy:
+    dest: "/etc/yum/vars/stream"
+    content: "8-stream"
+    force: true
+    mode: "0644"
+    owner: "root"
+    group: "root"
+    create: true
+    state: present
+  become: true
+  when: not offline
+
 - name: Rocky Linux | add openstack repository
   ansible.builtin.command: >-
     dnf -y install {{ openstack_repo_rpm }}
