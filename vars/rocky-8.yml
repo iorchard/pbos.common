@@ -5,8 +5,6 @@ prereq_pkgs:
   - gnupg2
   - curl
 
-openstack_repo_rpm: "https://repos.fedorapeople.org/repos/openstack/openstack-{{ openstack_release }}/rdo-release-{{ openstack_release }}-2.el8.noarch.rpm"
-
 packages:
   - rsyslog
 

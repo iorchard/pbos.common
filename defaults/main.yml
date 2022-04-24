@@ -1,7 +1,8 @@
 ---
 offline: false
 local_repo_url: ~
-openstack_release: "wallaby"
+openstack_release: "yoga"
+openstack_repo_rpm: "https://repos.fedorapeople.org/repos/openstack/openstack-{{ openstack_release }}/rdo-release-{{ openstack_release }}-1.el8.noarch.rpm"
 # TLS
 # Set this to true to use the existing CA key and certificate
 # Override tls_tmp_ca to the existing CA key and cert directory in global vars
