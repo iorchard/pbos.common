@@ -1,4 +1,9 @@
 ---
+- name: Main | check if ca certificate exists
+  ansible.builtin.stat:
+    path: "{{ tls_ca_cert }}"
+  register: ca_cert_file
+
 - name: TLS | create temporary certificate directory
   ansible.builtin.file:
     path: "{{ tls_tmp_dir }}"
@@ -6,7 +11,9 @@
     mode: "0700"
   delegate_to: "{{ groups['controller'][0] }}"
   run_once: true
-  when: not skip_ca_cert_creation_tasks
+  when: 
+    - not skip_ca_cert_creation_tasks
+    - not ca_cert_file.stat.exists
 
 - name: TLS | create certificate directory
   ansible.builtin.file:
@@ -17,7 +24,7 @@
 
 - name: TLS | create CA private key with passphrase
   community.crypto.openssl_privatekey:
-    path: "{{ tls_tmp_ca.key }}"
+    path: "{{ tls_ca_key }}"
     passphrase: "{{ ca_passphrase }}"
     select_crypto_backend: cryptography
     type: RSA
@@ -25,11 +32,13 @@
     cipher: auto
   delegate_to: "{{ groups['controller'][0] }}"
   run_once: true
-  when: not skip_ca_cert_creation_tasks
+  when: 
+    - not skip_ca_cert_creation_tasks
+    - not ca_cert_file.stat.exists
 
 - name: TLS | create CSR for CA certificate
   community.crypto.openssl_csr_pipe:
-    privatekey_path: "{{ tls_tmp_ca.key }}"
+    privatekey_path: "{{ tls_ca_.key }}"
     privatekey_passphrase: "{{ ca_passphrase }}"
     country_name: "{{ tls_subj.country_name }}"
     state_or_province_name: "{{ tls_subj.state_or_province_name }}"
@@ -46,30 +55,51 @@
   register: ca_csr
   delegate_to: "{{ groups['controller'][0] }}"
   run_once: true
-  when: not skip_ca_cert_creation_tasks
+  when: 
+    - not skip_ca_cert_creation_tasks
+    - not ca_cert_file.stat.exists
 
 - name: TLS | create CA certificate
   community.crypto.x509_certificate:
-    path: "{{ tls_tmp_ca.crt }}"
+    path: "{{ tls_ca_cert }}"
     csr_content: "{{ ca_csr.csr }}"
     ownca_not_after: "+36500d"
     ownca_not_before: "+0s"
-    privatekey_path: "{{ tls_tmp_ca.key }}"
+    privatekey_path: "{{ tls_ca_key }}"
     privatekey_passphrase: "{{ ca_passphrase }}"
     provider: selfsigned
   delegate_to: "{{ groups['controller'][0] }}"
   run_once: true
-  when: not skip_ca_cert_creation_tasks
+  when: 
+    - not skip_ca_cert_creation_tasks
+    - not ca_cert_file.stat.exists
+
+- name: TLS | get ca certificate from the first controller
+  ansible.builtin.slurp:
+    src: "{{ tls_ca_cert }}"
+  register: c
+  delegate_to: "{{ groups['controller'][0] }}"
+  run_once: true
+
+- name: TLS | get ca private key from the first controller
+  ansible.builtin.slurp:
+    src: "{{ tls_ca_key }}"
+  register: k
+  become: true
+  delegate_to: "{{ groups['controller'][0] }}"
+  run_once: true
 
 - name: TLS | copy ca certificate and key to all nodes
   ansible.builtin.copy:
+    content: "{{ item.content | b64decode }}"
     dest: "{{ item.dest }}"
-    src: "{{ item.src }}"
     owner: "root"
     group: "root"
     mode: "{{ item.mode }}"
   become: true
   loop:
-    - {src: "{{ tls_tmp_ca.crt }}", dest: "{{ tls_ca_cert }}", mode: "0644"}
-    - {src: "{{ tls_tmp_ca.key }}", dest: "{{ tls_ca_key }}", mode: "0600"}
+    - {content: "{{ c.content }}", dest: "{{ tls_ca_cert }}", mode: "0644"}
+    - {content: "{{ k.content }}", dest: "{{ tls_ca_key }}", mode: "0600"}
+  when: inventory_hostname != groups['controller'][0]
+  no_log: true
 ...
