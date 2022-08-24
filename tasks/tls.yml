@@ -30,6 +30,7 @@
     type: RSA
     size: 4096
     cipher: auto
+  become: true
   delegate_to: "{{ groups['controller'][0] }}"
   run_once: true
   when: 
@@ -38,7 +39,7 @@
 
 - name: TLS | create CSR for CA certificate
   community.crypto.openssl_csr_pipe:
-    privatekey_path: "{{ tls_ca_.key }}"
+    privatekey_path: "{{ tls_ca_key }}"
     privatekey_passphrase: "{{ ca_passphrase }}"
     country_name: "{{ tls_subj.country_name }}"
     state_or_province_name: "{{ tls_subj.state_or_province_name }}"
@@ -52,6 +53,7 @@
     key_usage:
       - keyCertSign
     key_usage_critical: true
+  become: true
   register: ca_csr
   delegate_to: "{{ groups['controller'][0] }}"
   run_once: true
@@ -68,6 +70,7 @@
     privatekey_path: "{{ tls_ca_key }}"
     privatekey_passphrase: "{{ ca_passphrase }}"
     provider: selfsigned
+  become: true
   delegate_to: "{{ groups['controller'][0] }}"
   run_once: true
   when: 
