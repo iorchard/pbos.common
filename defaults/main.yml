@@ -3,6 +3,10 @@ offline: false
 local_repo_url: ~
 openstack_release: "yoga"
 openstack_repo_rpm: "https://repos.fedorapeople.org/repos/openstack/openstack-{{ openstack_release }}/rdo-release-{{ openstack_release }}-1.el8.noarch.rpm"
+# deploy_ssh_key: (boolean) create ssh keypairs and copy it to other nodes.
+# default: false
+deploy_ssh_key: false
+sshkey_dir: "{{ ansible_env.HOME }}/.ssh"
 # TLS
 # Set this to true to use the existing CA key and certificate
 # Override tls_tmp_ca to the existing CA key and cert directory in global vars

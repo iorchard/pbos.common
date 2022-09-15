@@ -18,4 +18,8 @@
 
 - name: Main | import tls tasks
   ansible.builtin.import_tasks: "tls.yml"
+
+- name: Main | import sshkey tasks
+  ansible.builtin.import_tasks: "sshkey.yml"
+  when: deploy_ssh_key
 ...
